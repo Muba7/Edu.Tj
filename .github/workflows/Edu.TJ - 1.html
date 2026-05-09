@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduTJ — Find Your Course in Tajikistan</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #F7F5F0;
+    --card: #FFFFFF;
+    --text: #1A1A1A;
+    --text-sub: #6B6560;
+    --accent: #2D6A4F;
+    --accent-light: #D8F3DC;
+    --accent-dark: #1B4332;
+    --border: #E8E4DE;
+    --tag-bg: #F0EDE8;
+    --red: #D64545;
+    --red-light: #FDEAEA;
+    --radius: 14px;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* ===== NAV ===== */
+  nav {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--accent-dark); cursor: pointer; }
+  .logo span { color: var(--accent); }
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+  .lang-toggle { display: flex; background: var(--tag-bg); border-radius: 8px; overflow: hidden; }
+  .lang-btn {
+    padding: 6px 14px; border: none; background: transparent;
+    font-size: 13px; font-weight: 600; color: var(--text-sub);
+    cursor: pointer; font-family: inherit; transition: all 0.2s;
+  }
+  .lang-btn.active { background: var(--accent); color: white; }
+  .nav-btn {
+    padding: 8px 18px; border-radius: 8px; font-size: 13px;
+    font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.2s;
+    border: 1.5px solid var(--accent); background: transparent; color: var(--accent);
+  }
+  .nav-btn:hover { background: var(--accent); color: white; }
+  .nav-btn-fill {
+    padding: 8px 18px; border-radius: 8px; font-size: 13px;
+    font-weight: 600; cursor: pointer; font-family: inherit;
+    border: none; background: var(--accent); color: white; transition: background 0.2s;
+  }
+  .nav-btn-fill:hover { background: var(--accent-dark); }
+  .nav-back {
+    padding: 8px 18px; border-radius: 8px; font-size: 13px;
+    font-weight: 500; cursor: pointer; font-family: inherit;
+    border: 1.5px solid var(--border); background: var(--card); color: var(--text-sub); transition: all 0.2s;
+  }
+  .nav-back:hover { border-color: var(--text-sub); }
+  .nav-logout {
+    padding: 8px 16px; border-radius: 8px; font-size: 13px;
+    font-weight: 500; cursor: pointer; font-family: inherit;
+    border: 1.5px solid var(--border); background: var(--card); color: var(--text-sub); transition: all 0.2s;
+  }
+  .nav-logout:hover { border-color: var(--red); color: var(--red); }
+
+  /* ===== PAGES ===== */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ===== HERO ===== */
+  .hero { text-align: center; padding: 64px 32px 40px; max-width: 720px; margin: 0 auto; }
+  .hero h1 {
+    font-family: 'Playfair Display', serif; font-size: 42px;
+    line-height: 1.15; color: var(--accent-dark); margin-bottom: 14px; letter-spacing: -1px;
+  }
+  .hero p { font-size: 16px; color: var(--text-sub); line-height: 1.6; margin-bottom: 32px; }
+  .search-bar { display: flex; gap: 10px; max-width: 560px; margin: 0 auto 20px; }
+  .search-bar input {
+    flex: 1; padding: 14px 20px; border: 2px solid var(--border);
+    border-radius: 10px; font-size: 15px; font-family: inherit;
+    background: var(--card); outline: none; transition: border 0.2s;
+  }
+  .search-bar input:focus { border-color: var(--accent); }
+  .search-bar button {
+    padding: 14px 24px; background: var(--accent); color: white;
+    border: none; border-radius: 10px; font-size: 15px; font-weight: 600;
+    cursor: pointer; font-family: inherit; transition: background 0.2s;
+  }
+  .search-bar button:hover { background: var(--accent-dark); }
+  .filters { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px; }
+  .filter-btn {
+    padding: 8px 16px; border: 1.5px solid var(--border); border-radius: 20px;
+    background: var(--card); font-size: 13px; font-weight: 500; color: var(--text-sub);
+    cursor: pointer; font-family: inherit; transition: all 0.2s;
+  }
+  .filter-btn:hover, .filter-btn.active { border-color: var(--accent); background: var(--accent-light); color: var(--accent-dark); }
+
+  /* STATS */
+  .stats { display: flex; gap: 32px; justify-content: center; margin-bottom: 40px; }
+  .stat-num { font-family: 'Playfair Display', serif; font-size: 30px; color: var(--accent); font-weight: 700; text-align: center; }
+  .stat-label { font-size: 12px; color: var(--text-sub); text-align: center; margin-top: 2px; }
+
+  /* CENTER GRID */
+  .section-label {
+    max-width: 1100px; margin: 0 auto 20px; padding: 0 32px;
+    font-size: 12px; font-weight: 600; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1.5px;
+  }
+  .grid {
+    max-width: 1100px; margin: 0 auto; padding: 0 32px 80px;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;
+  }
+  .card {
+    background: var(--card); border-radius: var(--radius); border: 1px solid var(--border);
+    overflow: hidden; transition: box-shadow 0.3s, transform 0.3s; cursor: pointer;
+  }
+  .card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.1); transform: translateY(-3px); }
+  .card-banner {
+    height: 140px; background: linear-gradient(135deg, var(--accent-light), #B7E4C7);
+    display: flex; align-items: center; justify-content: center; position: relative;
+  }
+  .card-banner .icon { font-size: 44px; opacity: 0.5; }
+  .card-badge {
+    position: absolute; top: 10px; right: 10px; background: var(--accent);
+    color: white; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 6px;
+  }
+  .card-body { padding: 18px; }
+  .card-city { font-size: 11px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .card-name { font-size: 17px; font-weight: 700; margin-bottom: 6px; line-height: 1.3; }
+  .card-desc { font-size: 13px; color: var(--text-sub); line-height: 1.5; margin-bottom: 14px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 14px; }
+  .tag { padding: 4px 10px; background: var(--tag-bg); border-radius: 6px; font-size: 11px; font-weight: 500; }
+  .card-foot {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 12px; border-top: 1px solid var(--border);
+  }
+  .card-price { font-size: 13px; font-weight: 700; color: var(--accent-dark); }
+  .card-price small { font-weight: 400; color: var(--text-sub); }
+  .card-rating { font-size: 13px; font-weight: 600; }
+  .star { color: #E5A100; }
+
+  /* ===== DETAIL MODAL ===== */
+  .modal-overlay {
+    display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.45); z-index: 200; align-items: center;
+    justify-content: center; padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--card); border-radius: 18px; max-width: 620px;
+    width: 100%; max-height: 85vh; overflow-y: auto; position: relative;
+    animation: modalIn 0.3s ease;
+  }
+  @keyframes modalIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .modal-x {
+    position: absolute; top: 14px; right: 14px; background: rgba(255,255,255,0.8);
+    border: none; width: 34px; height: 34px; border-radius: 50%;
+    font-size: 18px; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center;
+  }
+  .modal-head {
+    height: 160px; background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+    display: flex; align-items: flex-end; padding: 22px; color: white;
+  }
+  .modal-head h2 { font-family: 'Playfair Display', serif; font-size: 26px; }
+  .modal-body { padding: 24px; }
+  .modal-info { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
+  .modal-info-item { font-size: 13px; color: var(--text-sub); }
+  .modal-info-item strong { display: block; font-size: 11px; color: var(--text); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+  .modal-section { font-size: 13px; font-weight: 700; margin-bottom: 10px; margin-top: 20px; }
+  .course-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+  }
+  .course-row:last-child { border-bottom: none; }
+  .cr-name { font-size: 14px; font-weight: 500; }
+  .cr-sub { font-size: 12px; color: var(--text-sub); margin-top: 2px; }
+  .cr-price { font-size: 14px; font-weight: 700; color: var(--accent); white-space: nowrap; }
+  .modal-contact { margin-top: 20px; padding: 14px; background: var(--accent-light); border-radius: 10px; }
+  .modal-contact p { font-size: 13px; color: var(--accent-dark); margin-bottom: 3px; }
+
+  /* ===== LOGIN PAGE ===== */
+  .login-wrap {
+    display: flex; align-items: center; justify-content: center;
+    min-height: calc(100vh - 60px); padding: 20px;
+  }
+  .login-box {
+    background: var(--card); border-radius: 18px; padding: 44px 36px;
+    width: 100%; max-width: 400px; box-shadow: 0 8px 40px rgba(0,0,0,0.08);
+  }
+  .login-box h2 {
+    font-family: 'Playfair Display', serif; font-size: 24px;
+    color: var(--accent-dark); text-align: center; margin-bottom: 4px;
+  }
+  .login-sub { text-align: center; font-size: 13px; color: var(--text-sub); margin-bottom: 28px; }
+  .form-group { margin-bottom: 16px; }
+  .form-label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; }
+  .form-input {
+    width: 100%; padding: 11px 14px; border: 2px solid var(--border);
+    border-radius: 10px; font-size: 14px; font-family: inherit;
+    outline: none; background: var(--bg); transition: border 0.2s;
+  }
+  .form-input:focus { border-color: var(--accent); }
+  .form-textarea {
+    width: 100%; padding: 11px 14px; border: 2px solid var(--border);
+    border-radius: 10px; font-size: 14px; font-family: inherit;
+    outline: none; background: var(--bg); resize: vertical; min-height: 70px; transition: border 0.2s;
+  }
+  .form-textarea:focus { border-color: var(--accent); }
+  .login-btn {
+    width: 100%; padding: 13px; background: var(--accent); color: white;
+    border: none; border-radius: 10px; font-size: 15px; font-weight: 600;
+    cursor: pointer; font-family: inherit; margin-top: 6px; transition: background 0.2s;
+  }
+  .login-btn:hover { background: var(--accent-dark); }
+  .login-error { color: var(--red); font-size: 13px; text-align: center; margin-top: 10px; display: none; }
+  .login-demo {
+    margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border);
+    font-size: 12px; color: var(--text-sub); text-align: center;
+  }
+  .login-demo code { background: var(--tag-bg); padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+
+  /* ===== DASHBOARD ===== */
+  .dash-header { max-width: 880px; margin: 0 auto; padding: 32px 32px 0; }
+  .dash-welcome { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--accent-dark); margin-bottom: 4px; }
+  .dash-sub { font-size: 13px; color: var(--text-sub); margin-bottom: 28px; }
+  .tabs { display: flex; gap: 4px; max-width: 880px; margin: 0 auto; padding: 0 32px; border-bottom: 2px solid var(--border); }
+  .tab {
+    padding: 10px 18px; font-size: 14px; font-weight: 600; color: var(--text-sub);
+    cursor: pointer; border: none; border-bottom: 2px solid transparent;
+    margin-bottom: -2px; background: none; font-family: inherit; transition: all 0.2s;
+  }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab:hover { color: var(--accent); }
+  .dash-content { max-width: 880px; margin: 0 auto; padding: 24px 32px 80px; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+  .info-grid .full { grid-column: 1 / -1; }
+
+  .course-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 22px; margin-bottom: 14px; position: relative;
+  }
+  .course-card:hover { box-shadow: 0 2px 16px rgba(0,0,0,0.06); }
+  .course-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .course-grid .full { grid-column: 1 / -1; }
+  .course-num {
+    position: absolute; top: -9px; left: 18px; background: var(--accent);
+    color: white; font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 5px;
+  }
+  .remove-btn {
+    position: absolute; top: 10px; right: 10px; background: var(--red-light);
+    border: none; color: var(--red); width: 30px; height: 30px; border-radius: 7px;
+    font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  .remove-btn:hover { background: var(--red); color: white; }
+  .teacher-sec { margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--border); }
+  .teacher-label { font-size: 11px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
+
+  .btn-primary {
+    padding: 11px 22px; background: var(--accent); color: white; border: none;
+    border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit;
+  }
+  .btn-primary:hover { background: var(--accent-dark); }
+  .btn-outline {
+    padding: 11px 22px; background: transparent; color: var(--accent);
+    border: 2px solid var(--accent); border-radius: 10px; font-size: 14px;
+    font-weight: 600; cursor: pointer; font-family: inherit;
+  }
+  .btn-outline:hover { background: var(--accent-light); }
+  .btn-row { display: flex; gap: 10px; margin-top: 20px; }
+
+  .preview-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-sub); margin-bottom: 14px; }
+  .preview-box { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; }
+
+  .toast {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--accent-dark); color: white; padding: 12px 24px; border-radius: 10px;
+    font-size: 14px; font-weight: 600; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease; z-index: 300;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  footer { text-align: center; padding: 36px; font-size: 13px; color: var(--text-sub); border-top: 1px solid var(--border); }
+
+  @media (max-width: 600px) {
+    nav { padding: 0 16px; }
+    .hero { padding: 40px 16px 28px; }
+    .hero h1 { font-size: 28px; }
+    .grid { padding: 0 16px 60px; grid-template-columns: 1fr; }
+    .search-bar { flex-direction: column; }
+    .info-grid, .course-grid { grid-template-columns: 1fr; }
+    .info-grid .full, .course-grid .full { grid-column: 1; }
+    .dash-header, .dash-content, .tabs { padding-left: 16px; padding-right: 16px; }
+    .login-box { padding: 28px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== NAV ==================== -->
+<nav id="mainNav">
+  <div class="logo" onclick="goHome()">Edu<span>TJ</span></div>
+  <div class="nav-right" id="navRight">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('ru')">RU</button>
+    </div>
+    <button class="nav-btn" id="navForCenters" onclick="goLogin()" data-en="For Centers" data-ru="Для центров">For Centers</button>
+  </div>
+</nav>
+
+<!-- ==================== PAGE: HOME ==================== -->
+<div class="page active" id="pageHome">
+  <div class="hero">
+    <h1 data-en="Every Course in Tajikistan. One Place." data-ru="Все курсы Таджикистана. В одном месте.">Every Course in Tajikistan. One Place.</h1>
+    <p data-en="Find the right educational center, compare courses and prices, and start learning today." data-ru="Найдите подходящий учебный центр, сравните курсы и цены, и начните учиться уже сегодня.">Find the right educational center, compare courses and prices, and start learning today.</p>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search courses, centers, or subjects..." data-en-ph="Search courses, centers, or subjects..." data-ru-ph="Поиск курсов, центров, предметов..." oninput="renderGrid()">
+      <button data-en="Search" data-ru="Поиск">Search</button>
+    </div>
+    <div class="filters" id="filtersBar"></div>
+  </div>
+  <div class="stats">
+    <div><div class="stat-num">3</div><div class="stat-label" data-en="Centers" data-ru="Центры">Centers</div></div>
+    <div><div class="stat-num">12</div><div class="stat-label" data-en="Courses" data-ru="Курсы">Courses</div></div>
+    <div><div class="stat-num">1</div><div class="stat-label" data-en="City" data-ru="Город">City</div></div>
+  </div>
+  <div class="section-label" data-en="Educational Centers" data-ru="Учебные центры">Educational Centers</div>
+  <div class="grid" id="cardGrid"></div>
+  <footer>EduTJ — <span data-en="Connecting learners with the best educational centers across Tajikistan" data-ru="Соединяем учащихся с лучшими учебными центрами Таджикистана">Connecting learners with the best educational centers across Tajikistan</span></footer>
+</div>
+
+<!-- ==================== DETAIL MODAL ==================== -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <button class="modal-x" onclick="closeModal()">×</button>
+    <div class="modal-head"><h2 id="modalTitle"></h2></div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- ==================== PAGE: LOGIN ==================== -->
+<div class="page" id="pageLogin">
+  <div class="login-wrap">
+    <div class="login-box">
+      <h2 data-en="Center Login" data-ru="Вход для центров">Center Login</h2>
+      <div class="login-sub" data-en="Log in to manage your center's profile and courses" data-ru="Войдите для управления профилем и курсами вашего центра">Log in to manage your center's profile and courses</div>
+      <div class="form-group">
+        <label class="form-label" data-en="Email" data-ru="Электронная почта">Email</label>
+        <input class="form-input" type="email" id="loginEmail" placeholder="center@edu.tj">
+      </div>
+      <div class="form-group">
+        <label class="form-label" data-en="Password" data-ru="Пароль">Password</label>
+        <input class="form-input" type="password" id="loginPass" placeholder="••••••••">
+      </div>
+      <button class="login-btn" onclick="doLogin()" data-en="Log In" data-ru="Войти">Log In</button>
+      <div class="login-error" id="loginError" data-en="Invalid email or password" data-ru="Неверный email или пароль">Invalid email or password</div>
+      <div class="login-demo">
+        <div style="margin-bottom:6px" data-en="Demo accounts:" data-ru="Демо аккаунты:">Demo accounts:</div>
+        <div><code>ilmhona@edu.tj</code> / <code>ilmhona123</code></div>
+        <div><code>american@edu.tj</code> / <code>american123</code></div>
+        <div><code>demo@edu.tj</code> / <code>demo123</code></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PAGE: DASHBOARD ==================== -->
+<div class="page" id="pageDash">
+  <div class="dash-header">
+    <div class="dash-welcome" id="dashWelcome"></div>
+    <div class="dash-sub" data-en="Manage your center's information and courses" data-ru="Управляйте информацией и курсами вашего центра">Manage your center's information and courses</div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('info',this)" data-en="Center Info" data-ru="О центре">Center Info</button>
+    <button class="tab" onclick="switchTab('courses',this)" data-en="Courses" data-ru="Курсы">Courses</button>
+    <button class="tab" onclick="switchTab('preview',this)" data-en="Preview" data-ru="Предпросмотр">Preview</button>
+  </div>
+  <div class="dash-content">
+    <!-- INFO -->
+    <div class="tab-panel active" id="tab-info">
+      <div class="info-grid">
+        <div><label class="form-label" data-en="Center Name" data-ru="Название центра">Center Name</label><input class="form-input" id="cName"></div>
+        <div><label class="form-label" data-en="City" data-ru="Город">City</label><input class="form-input" id="cCity"></div>
+        <div class="full"><label class="form-label" data-en="Address" data-ru="Адрес">Address</label><input class="form-input" id="cAddr"></div>
+        <div><label class="form-label" data-en="Phone" data-ru="Телефон">Phone</label><input class="form-input" id="cPhone" placeholder="+992 ..."></div>
+        <div><label class="form-label" data-en="Working Hours" data-ru="Время работы">Working Hours</label><input class="form-input" id="cHours"></div>
+        <div class="full"><label class="form-label" data-en="Description" data-ru="Описание">Description</label><textarea class="form-textarea" id="cDesc" rows="3"></textarea></div>
+        <div><label class="form-label" data-en="Instagram" data-ru="Инстаграм">Instagram</label><input class="form-input" id="cInsta" placeholder="@handle"></div>
+        <div><label class="form-label" data-en="Telegram" data-ru="Телеграм">Telegram</label><input class="form-input" id="cTG" placeholder="@channel"></div>
+      </div>
+      <div class="btn-row"><button class="btn-primary" onclick="saveInfo()" data-en="Save Changes" data-ru="Сохранить">Save Changes</button></div>
+    </div>
+    <!-- COURSES -->
+    <div class="tab-panel" id="tab-courses">
+      <div id="coursesList"></div>
+      <div class="btn-row">
+        <button class="btn-outline" onclick="addCourse()" data-en="+ Add Course" data-ru="+ Добавить курс">+ Add Course</button>
+        <button class="btn-primary" onclick="saveCourses()" data-en="Save All Courses" data-ru="Сохранить курсы">Save All Courses</button>
+      </div>
+    </div>
+    <!-- PREVIEW -->
+    <div class="tab-panel" id="tab-preview">
+      <div class="preview-label" data-en="This is how students will see your center" data-ru="Так студенты увидят ваш центр">This is how students will see your center</div>
+      <div class="preview-box" id="previewBox"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== DATA =====
+const centers = [
+  {
+    id: 'ilmhona', name: 'Ilmhona', city: 'Dushanbe',
+    address: 'Rudaki Ave 45, Dushanbe', phone: '+992 44 600 1234',
+    hours: 'Mon–Sat, 9:00–18:00', rating: 4.8, badge: 'Top Rated',
+    desc: 'Leading educational center specializing in SAT prep, English, and Mathematics with experienced tutors.',
+    instagram: '@ilmhona', telegram: '@ilmhona_edu',
+    courses: [
+      { name:'SAT Full Course', price:'2,500 TJS', duration:'3 months', location:'Main Campus', description:'Complete SAT preparation covering Math and English sections', teacherName:'Farrukh Nazarov', teacherPhone:'+992 93 111 2233', teacherSocial:'@farrukh_teach', teacherLinkedin:'' },
+      { name:'IELTS Preparation', price:'1,800 TJS', duration:'2 months', location:'Main Campus', description:'Intensive IELTS prep for all four sections', teacherName:'Madina Rakhimova', teacherPhone:'', teacherSocial:'@madina_eng', teacherLinkedin:'' },
+      { name:'Python Programming', price:'2,000 TJS', duration:'3 months', location:'Computer Lab', description:'Learn Python from basics to intermediate level', teacherName:'Daler Karimov', teacherPhone:'', teacherSocial:'', teacherLinkedin:'linkedin.com/in/daler-k' },
+      { name:'Mathematics Advanced', price:'1,500 TJS', duration:'4 months', location:'Room 12', description:'Advanced math for university entrance and olympiads', teacherName:'Rustam Shoev', teacherPhone:'+992 90 555 6677', teacherSocial:'', teacherLinkedin:'' }
+    ]
+  },
+  {
+    id: 'american', name: 'American School', city: 'Dushanbe',
+    address: 'Ismoili Somoni St 88, Dushanbe', phone: '+992 93 555 7890',
+    hours: 'Mon–Fri, 10:00–19:00', rating: 4.6, badge: 'New',
+    desc: 'Modern language and coding school with American-style teaching methods and small class sizes.',
+    instagram: '@americanschool_tj', telegram: '@amschool',
+    courses: [
+      { name:'English Beginner', price:'1,200 TJS', duration:'3 months', location:'Room A1', description:'English from zero for complete beginners', teacherName:'Sarah Mitchell', teacherPhone:'', teacherSocial:'@sarah_teaches', teacherLinkedin:'linkedin.com/in/sarah-m' },
+      { name:'English Advanced', price:'1,800 TJS', duration:'2 months', location:'Room A2', description:'Advanced speaking and writing for fluent communication', teacherName:'Sarah Mitchell', teacherPhone:'', teacherSocial:'@sarah_teaches', teacherLinkedin:'' },
+      { name:'Web Development', price:'3,200 TJS', duration:'4 months', location:'Lab 1', description:'HTML, CSS, JavaScript and React — build real websites', teacherName:'Timur Askarov', teacherPhone:'+992 90 333 4455', teacherSocial:'@timur_dev', teacherLinkedin:'linkedin.com/in/timur-a' },
+      { name:'Graphic Design', price:'2,000 TJS', duration:'2 months', location:'Lab 2', description:'Photoshop, Illustrator, and design thinking fundamentals', teacherName:'Nilufar Azimova', teacherPhone:'', teacherSocial:'@nilu_design', teacherLinkedin:'' }
+    ]
+  },
+  {
+    id: 'demo', name: 'Demonstration', city: 'Dushanbe',
+    address: 'Bokhtar St 22, Dushanbe', phone: '+992 44 700 5566',
+    hours: 'Mon–Sat, 8:00–17:00', rating: 4.5, badge: null,
+    desc: 'Community education center offering affordable courses in business, languages, and digital skills.',
+    instagram: '@demo_center', telegram: '@demo_edu',
+    courses: [
+      { name:'Business Management', price:'2,200 TJS', duration:'3 months', location:'Main Hall', description:'Fundamentals of business planning, management, and leadership', teacherName:'Komron Rahimov', teacherPhone:'+992 92 777 3456', teacherSocial:'', teacherLinkedin:'linkedin.com/in/komron-r' },
+      { name:'Digital Marketing', price:'1,800 TJS', duration:'2 months', location:'Room 5', description:'Social media marketing, SEO, and content strategy', teacherName:'Zarina Mirzoeva', teacherPhone:'', teacherSocial:'@zarina_marketing', teacherLinkedin:'' },
+      { name:'Russian Language', price:'800 TJS', duration:'3 months', location:'Room 3', description:'Russian for beginners and intermediate learners', teacherName:'Olga Petrova', teacherPhone:'', teacherSocial:'', teacherLinkedin:'' },
+      { name:'Computer Basics', price:'600 TJS', duration:'1 month', location:'Computer Room', description:'MS Office, internet, email — essential digital literacy', teacherName:'Firdavs Nazarov', teacherPhone:'+992 93 888 9900', teacherSocial:'@firdavs_it', teacherLinkedin:'' }
+    ]
+  }
+];
+
+const accounts = {
+  'ilmhona@edu.tj': { password: 'ilmhona123', centerId: 'ilmhona' },
+  'american@edu.tj': { password: 'american123', centerId: 'american' },
+  'demo@edu.tj': { password: 'demo123', centerId: 'demo' }
+};
+
+let lang = 'en';
+let currentFilter = 'all';
+let loggedCenter = null;
+
+// ===== LANGUAGE =====
+function setLang(l) {
+  lang = l;
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent === l.toUpperCase());
+  });
+  document.querySelectorAll('[data-' + l + ']').forEach(el => {
+    el.textContent = el.getAttribute('data-' + l);
+  });
+  // placeholders
+  document.querySelectorAll('[data-' + l + '-ph]').forEach(el => {
+    el.placeholder = el.getAttribute('data-' + l + '-ph');
+  });
+  renderGrid();
+  renderFilters();
+  if (loggedCenter) renderCoursesDash();
+}
+
+// ===== PAGES =====
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function goHome() {
+  loggedCenter = null;
+  showPage('pageHome');
+  updateNav('home');
+  renderGrid();
+}
+
+function goLogin() {
+  showPage('pageLogin');
+  updateNav('login');
+}
+
+function goDash() {
+  showPage('pageDash');
+  updateNav('dash');
+  loadDash();
+}
+
+function updateNav(mode) {
+  const nr = document.getElementById('navRight');
+  const langHtml = `<div class="lang-toggle"><button class="lang-btn ${lang==='en'?'active':''}" onclick="setLang('en')">EN</button><button class="lang-btn ${lang==='ru'?'active':''}" onclick="setLang('ru')">RU</button></div>`;
+
+  if (mode === 'home') {
+    nr.innerHTML = langHtml + `<button class="nav-btn" onclick="goLogin()" data-en="For Centers" data-ru="Для центров">${lang==='ru'?'Для центров':'For Centers'}</button>`;
+  } else if (mode === 'login') {
+    nr.innerHTML = langHtml + `<button class="nav-back" onclick="goHome()" data-en="← Back" data-ru="← Назад">${lang==='ru'?'← Назад':'← Back'}</button>`;
+  } else if (mode === 'dash') {
+    nr.innerHTML = langHtml + `<button class="nav-back" onclick="goHome()" data-en="View Site" data-ru="Сайт">${lang==='ru'?'Сайт':'View Site'}</button><button class="nav-logout" onclick="doLogout()" data-en="Log Out" data-ru="Выйти">${lang==='ru'?'Выйти':'Log Out'}</button>`;
+  }
+}
+
+// ===== FILTERS =====
+function getAllTags() {
+  const tags = new Set();
+  centers.forEach(c => c.courses.forEach(cr => {
+    const n = cr.name.toLowerCase();
+    if (n.includes('sat')) tags.add('sat');
+    if (n.includes('english') || n.includes('ielts')) tags.add('english');
+    if (n.includes('python') || n.includes('coding') || n.includes('web') || n.includes('computer')) tags.add('coding');
+    if (n.includes('math')) tags.add('math');
+    if (n.includes('design') || n.includes('graphic')) tags.add('design');
+    if (n.includes('business') || n.includes('marketing')) tags.add('business');
+    if (n.includes('russian')) tags.add('russian');
+  }));
+  return [...tags];
+}
+
+const tagLabels = {
+  en: { all:'All', sat:'SAT Prep', english:'English', coding:'Coding', math:'Math', design:'Design', business:'Business', russian:'Russian' },
+  ru: { all:'Все', sat:'SAT', english:'Английский', coding:'Программирование', math:'Математика', design:'Дизайн', business:'Бизнес', russian:'Русский' }
+};
+
+function renderFilters() {
+  const tags = ['all', ...getAllTags()];
+  document.getElementById('filtersBar').innerHTML = tags.map(t =>
+    `<button class="filter-btn ${currentFilter===t?'active':''}" onclick="setFilter('${t}',this)">${tagLabels[lang][t] || t}</button>`
+  ).join('');
+}
+
+function setFilter(f) {
+  currentFilter = f;
+  renderFilters();
+  renderGrid();
+}
+
+function getCourseTags(center) {
+  const tags = new Set();
+  center.courses.forEach(cr => {
+    const n = cr.name.toLowerCase();
+    if (n.includes('sat')) tags.add('sat');
+    if (n.includes('english') || n.includes('ielts')) tags.add('english');
+    if (n.includes('python') || n.includes('coding') || n.includes('web') || n.includes('computer')) tags.add('coding');
+    if (n.includes('math')) tags.add('math');
+    if (n.includes('design') || n.includes('graphic')) tags.add('design');
+    if (n.includes('business') || n.includes('marketing')) tags.add('business');
+    if (n.includes('russian')) tags.add('russian');
+  });
+  return [...tags];
+}
+
+// ===== GRID =====
+function renderGrid() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = centers.filter(c => {
+    const tags = getCourseTags(c);
+    const matchF = currentFilter === 'all' || tags.includes(currentFilter);
+    const matchQ = !q || c.name.toLowerCase().includes(q) || c.city.toLowerCase().includes(q) ||
+      c.courses.some(cr => cr.name.toLowerCase().includes(q) || cr.teacherName.toLowerCase().includes(q));
+    return matchF && matchQ;
+  });
+
+  document.getElementById('cardGrid').innerHTML = filtered.map((c, i) => {
+    const tags = getCourseTags(c);
+    const minPrice = c.courses.length ? c.courses[0].price : '—';
+    return `
+    <div class="card" onclick="openModal('${c.id}')">
+      <div class="card-banner"><div class="icon">🎓</div>${c.badge ? `<div class="card-badge">${c.badge}</div>` : ''}</div>
+      <div class="card-body">
+        <div class="card-city">${esc(c.city)}</div>
+        <div class="card-name">${esc(c.name)}</div>
+        <div class="card-desc">${esc(c.desc)}</div>
+        <div class="tags">${tags.map(t => `<span class="tag">${tagLabels[lang][t]||t}</span>`).join('')}</div>
+        <div class="card-foot">
+          <div class="card-price">${lang==='ru'?'От':'From'} ${minPrice} <small>/ ${lang==='ru'?'курс':'course'}</small></div>
+          <div class="card-rating"><span class="star">★</span> ${c.rating}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== MODAL =====
+function openModal(id) {
+  const c = centers.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('modalTitle').textContent = c.name;
+  document.getElementById('modalBody').innerHTML = `
+    <div class="modal-info">
+      <div class="modal-info-item"><strong>${lang==='ru'?'Город':'City'}</strong>${esc(c.city)}</div>
+      <div class="modal-info-item"><strong>${lang==='ru'?'Часы':'Hours'}</strong>${esc(c.hours)}</div>
+      <div class="modal-info-item"><strong>${lang==='ru'?'Рейтинг':'Rating'}</strong><span class="star">★</span> ${c.rating}</div>
+    </div>
+    <p style="font-size:14px;color:var(--text-sub);line-height:1.6;margin-bottom:16px">${esc(c.desc)}</p>
+    <div class="modal-section">${lang==='ru'?'Курсы и цены':'Courses & Prices'}</div>
+    ${c.courses.map(cr => `
+      <div class="course-row">
+        <div>
+          <div class="cr-name">${esc(cr.name)}</div>
+          <div class="cr-sub">${esc(cr.duration)}${cr.teacherName ? ' · '+esc(cr.teacherName) : ''}</div>
+        </div>
+        <div class="cr-price">${esc(cr.price)}</div>
+      </div>
+    `).join('')}
+    <div class="modal-contact">
+      <p><strong>${lang==='ru'?'Тел:':'Phone:'}</strong> ${esc(c.phone)}</p>
+      <p><strong>${lang==='ru'?'Адрес:':'Address:'}</strong> ${esc(c.address)}</p>
+      ${c.instagram ? `<p><strong>Instagram:</strong> ${esc(c.instagram)}</p>` : ''}
+      ${c.telegram ? `<p><strong>Telegram:</strong> ${esc(c.telegram)}</p>` : ''}
+    </div>
+  `;
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modal')) {
+    document.getElementById('modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ===== LOGIN =====
+function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('loginPass').value;
+  const acc = accounts[email];
+  if (acc && acc.password === pass) {
+    loggedCenter = centers.find(c => c.id === acc.centerId);
+    document.getElementById('loginError').style.display = 'none';
+    goDash();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+
+function doLogout() {
+  loggedCenter = null;
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginPass').value = '';
+  goHome();
+}
+
+document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+// ===== DASHBOARD =====
+function loadDash() {
+  const c = loggedCenter;
+  document.getElementById('dashWelcome').textContent = (lang==='ru'?'Добро пожаловать, ':'Welcome, ') + c.name;
+  document.getElementById('cName').value = c.name;
+  document.getElementById('cCity').value = c.city;
+  document.getElementById('cAddr').value = c.address;
+  document.getElementById('cPhone').value = c.phone;
+  document.getElementById('cHours').value = c.hours;
+  document.getElementById('cDesc').value = c.desc;
+  document.getElementById('cInsta').value = c.instagram;
+  document.getElementById('cTG').value = c.telegram;
+  // reset tabs
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===0));
+  document.querySelectorAll('.tab-panel').forEach((p,i) => p.classList.toggle('active', i===0));
+  renderCoursesDash();
+}
+
+function saveInfo() {
+  loggedCenter.name = document.getElementById('cName').value;
+  loggedCenter.city = document.getElementById('cCity').value;
+  loggedCenter.address = document.getElementById('cAddr').value;
+  loggedCenter.phone = document.getElementById('cPhone').value;
+  loggedCenter.hours = document.getElementById('cHours').value;
+  loggedCenter.desc = document.getElementById('cDesc').value;
+  loggedCenter.instagram = document.getElementById('cInsta').value;
+  loggedCenter.telegram = document.getElementById('cTG').value;
+  document.getElementById('dashWelcome').textContent = (lang==='ru'?'Добро пожаловать, ':'Welcome, ') + loggedCenter.name;
+  showToast(lang==='ru'?'Сохранено ✓':'Saved ✓');
+}
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+  if (tab === 'preview') renderPreview();
+}
+
+// ===== COURSES DASH =====
+function renderCoursesDash() {
+  const list = document.getElementById('coursesList');
+  const c = loggedCenter;
+  if (!c.courses.length) {
+    list.innerHTML = `<div style="text-align:center;padding:40px 0;color:var(--text-sub)"><div style="font-size:36px;margin-bottom:10px">📚</div><div>${lang==='ru'?'Нет курсов. Добавьте первый!':'No courses yet. Add your first one!'}</div></div>`;
+    return;
+  }
+  list.innerHTML = c.courses.map((cr, i) => `
+    <div class="course-card">
+      <div class="course-num">${lang==='ru'?'Курс':'Course'} ${i+1}</div>
+      <button class="remove-btn" onclick="removeCourse(${i})">×</button>
+      <div class="course-grid">
+        <div><label class="form-label">${lang==='ru'?'Название':'Course Name'}</label><input class="form-input" value="${esc(cr.name)}" onchange="updCourse(${i},'name',this.value)"></div>
+        <div><label class="form-label">${lang==='ru'?'Цена':'Price'}</label><input class="form-input" value="${esc(cr.price)}" onchange="updCourse(${i},'price',this.value)"></div>
+        <div><label class="form-label">${lang==='ru'?'Длительность':'Duration'}</label><input class="form-input" value="${esc(cr.duration)}" onchange="updCourse(${i},'duration',this.value)"></div>
+        <div><label class="form-label">${lang==='ru'?'Расположение':'Location'}</label><input class="form-input" value="${esc(cr.location)}" onchange="updCourse(${i},'location',this.value)"></div>
+        <div class="full"><label class="form-label">${lang==='ru'?'Описание':'Description'}</label><textarea class="form-textarea" onchange="updCourse(${i},'description',this.value)" rows="2">${esc(cr.description)}</textarea></div>
+      </div>
+      <div class="teacher-sec">
+        <div class="teacher-label">👤 ${lang==='ru'?'Преподаватель':'Teacher'}</div>
+        <div class="course-grid">
+          <div><label class="form-label">${lang==='ru'?'Имя':'Name'}</label><input class="form-input" value="${esc(cr.teacherName)}" onchange="updCourse(${i},'teacherName',this.value)"></div>
+          <div><label class="form-label">${lang==='ru'?'Телефон':'Phone'}</label><input class="form-input" value="${esc(cr.teacherPhone)}" onchange="updCourse(${i},'teacherPhone',this.value)"></div>
+          <div><label class="form-label">${lang==='ru'?'Соцсети':'Social Media'}</label><input class="form-input" value="${esc(cr.teacherSocial)}" onchange="updCourse(${i},'teacherSocial',this.value)"></div>
+          <div><label class="form-label">LinkedIn</label><input class="form-input" value="${esc(cr.teacherLinkedin)}" onchange="updCourse(${i},'teacherLinkedin',this.value)"></div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addCourse() {
+  loggedCenter.courses.push({ name:'',price:'',duration:'',location:'',description:'',teacherName:'',teacherPhone:'',teacherSocial:'',teacherLinkedin:'' });
+  renderCoursesDash();
+  const cards = document.querySelectorAll('.course-card');
+  if (cards.length) cards[cards.length-1].scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function removeCourse(i) {
+  if (confirm(lang==='ru'?'Удалить курс?':'Remove this course?')) {
+    loggedCenter.courses.splice(i,1);
+    renderCoursesDash();
+  }
+}
+
+function updCourse(i, field, val) { loggedCenter.courses[i][field] = val; }
+
+function saveCourses() { showToast(lang==='ru'?'Курсы сохранены ✓':'Courses saved ✓'); }
+
+// ===== PREVIEW =====
+function renderPreview() {
+  const c = loggedCenter;
+  const coursesHtml = c.courses.length ? c.courses.map(cr => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div>
+        <div style="font-weight:600;font-size:14px">${esc(cr.name)||'—'}</div>
+        <div style="font-size:12px;color:var(--text-sub);margin-top:2px">${esc(cr.duration)}${cr.teacherName?' · '+esc(cr.teacherName):''}</div>
+      </div>
+      <div style="font-weight:700;color:var(--accent);font-size:14px">${esc(cr.price)||'—'}</div>
+    </div>
+  `).join('') : `<div style="color:var(--text-sub);font-size:13px;padding:10px 0">${lang==='ru'?'Курсы не добавлены':'No courses yet'}</div>`;
+
+  document.getElementById('previewBox').innerHTML = `
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px">
+      <div style="width:50px;height:50px;background:var(--accent-light);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px">🎓</div>
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--accent-dark)">${esc(c.name)}</div>
+        <div style="font-size:13px;color:var(--text-sub)">${esc(c.city)}${c.address?' · '+esc(c.address):''}</div>
+      </div>
+    </div>
+    ${c.desc?`<p style="font-size:13px;color:var(--text-sub);line-height:1.6;margin-bottom:16px">${esc(c.desc)}</p>`:''}
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;font-size:13px">
+      ${c.phone?`<div><strong>${lang==='ru'?'Тел:':'Phone:'}</strong> ${esc(c.phone)}</div>`:''}
+      ${c.hours?`<div><strong>${lang==='ru'?'Часы:':'Hours:'}</strong> ${esc(c.hours)}</div>`:''}
+    </div>
+    <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-sub);margin-bottom:8px">${lang==='ru'?'Курсы':'Courses'}</div>
+    ${coursesHtml}
+  `;
+}
+
+// ===== UTILS =====
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ===== INIT =====
+renderFilters();
+renderGrid();
+</script>
+</body>
+</html>
