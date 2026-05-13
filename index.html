@@ -12,9 +12,9 @@
     --card: #FFFFFF;
     --text: #1A1A1A;
     --text-sub: #6B6560;
-    --accent: #2D6A4F;
-    --accent-light: #D8F3DC;
-    --accent-dark: #1B4332;
+    --accent: #2563EB;
+    --accent-light: #DBEAFE;
+    --accent-dark: #1E40AF;
     --border: #E8E4DE;
     --tag-bg: #F0EDE8;
     --red: #D64545;
@@ -123,7 +123,7 @@
   }
   .card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.1); transform: translateY(-3px); }
   .card-banner {
-    height: 140px; background: linear-gradient(135deg, var(--accent-light), #B7E4C7);
+    height: 140px; background: linear-gradient(135deg, var(--accent-light), #BFDBFE);
     display: flex; align-items: center; justify-content: center; position: relative;
   }
   .card-banner .icon { font-size: 44px; opacity: 0.5; }
@@ -314,7 +314,7 @@
       <button class="lang-btn active" onclick="setLang('en')">EN</button>
       <button class="lang-btn" onclick="setLang('ru')">RU</button>
     </div>
-    <button class="nav-btn" id="navForCenters" onclick="goLogin()" data-en="For Centers" data-ru="Для центров">For Centers</button>
+    <button class="nav-btn" id="navForCenters" onclick="goLogin()" data-en="Log in here" data-ru="Войти здесь">Log in here</button>
   </div>
 </nav>
 
@@ -520,7 +520,7 @@ function updateNav(mode) {
   const langHtml = `<div class="lang-toggle"><button class="lang-btn ${lang==='en'?'active':''}" onclick="setLang('en')">EN</button><button class="lang-btn ${lang==='ru'?'active':''}" onclick="setLang('ru')">RU</button></div>`;
 
   if (mode === 'home') {
-    nr.innerHTML = langHtml + `<button class="nav-btn" onclick="goLogin()" data-en="For Centers" data-ru="Для центров">${lang==='ru'?'Для центров':'For Centers'}</button>`;
+    nr.innerHTML = langHtml + `<button class="nav-btn" onclick="goLogin()" data-en="Log in here" data-ru="Войти здесь">${lang==='ru'?'Войти здесь':'Log in here'}</button>`;
   } else if (mode === 'login') {
     nr.innerHTML = langHtml + `<button class="nav-back" onclick="goHome()" data-en="← Back" data-ru="← Назад">${lang==='ru'?'← Назад':'← Back'}</button>`;
   } else if (mode === 'dash') {
